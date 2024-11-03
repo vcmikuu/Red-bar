@@ -1,9 +1,11 @@
 #pragma once
-#include "UnityEngine/Color.hpp"
+
 #include "config-utils/shared/config-utils.hpp"
+#include "UnityEngine/Color.hpp"
+
+// Mhm..
 
 DECLARE_CONFIG(ModConfig,
-
     CONFIG_VALUE(Rainbow, bool, "Rainbow Bar when full energy", true);
     CONFIG_VALUE(AlwaysRainbow, bool, "Always Rainbow Bar", false);
     CONFIG_VALUE(Fadeout, bool, "Fadeout", false);

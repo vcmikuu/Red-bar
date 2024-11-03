@@ -6,28 +6,34 @@
 #include "UnityEngine/Vector2.hpp"
 #include "UnityEngine/UI/Image.hpp"
 #include "UnityEngine/UI/Toggle.hpp"
-#include "UnityEngine/UI/Toggle_ToggleEvent.hpp"
+//#include "UnityEngine/UI/Toggle_ToggleEvent.hpp"
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "UnityEngine/Events/UnityAction_1.hpp"
 #include "HMUI/ScrollView.hpp"
 #include "HMUI/ModalView.hpp"
 #include "HMUI/Touchable.hpp"
-#include "main.hpp"
 #include "UnityEngine/Resources.hpp"
 #include "GlobalNamespace/ColorPickerButtonController.hpp"
 #include "GlobalNamespace/HSVPanelController.hpp"
 #include "GlobalNamespace/ColorChangeUIEventType.hpp"
 #include "System/Action_2.hpp"
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
-#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
+#include "bsml/shared/BSML.hpp"
+#include "bsml/shared/BSML/Components/Settings/SliderSetting.hpp"
+#include "bsml/shared/BSML/Components/Settings/DropdownListSetting.hpp"
+#include "bsml/shared/BSML/Components/Settings/ListSetting.hpp"
+#include "bsml/shared/BSML/Components/Settings/StringSetting.hpp"
+#include "bsml/shared/BSML/Components/ClickableText.hpp"
+#include "bsml/shared/BSML/Components/Backgroundable.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Text.hpp"
 #include "UnityEngine/Color.hpp"
 #include "config-utils/shared/config-utils.hpp"
 #include <stdlib.h>
 
-using namespace QuestUI;
+using namespace BSML;
 using namespace UnityEngine;
 using namespace UnityEngine::UI;
 using namespace UnityEngine::Events;
@@ -39,12 +45,12 @@ using namespace HMUI;
 void DidActivate(ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling){
     if(firstActivation) {
         self->get_gameObject()->AddComponent<Touchable*>();
-        GameObject* container = BeatSaberUI::CreateScrollableSettingsContainer(self->get_transform());
+       GameObject* container = BSML::Lite::CreateScrollableSettingsContainer(self->get_transform());
 
-        QuestUI::BeatSaberUI::AddHoverHint(AddConfigValueToggle(container->get_transform(), getModConfig().Rainbow)->get_gameObject(), "overrides Fadeout");
+        BSML::Lite::AddHoverHint(AddConfigValueToggle(container->get_transform(), getModConfig().Rainbow)->get_gameObject(), "overrides Fadeout");
 
         // AlwaysRainbow
-        QuestUI::BeatSaberUI::AddHoverHint(AddConfigValueToggle(container->get_transform(), getModConfig().AlwaysRainbow)->get_gameObject(), "overrides Fadeout, Fade red to green and Rainbow");
+        BSML::Lite::AddHoverHint(AddConfigValueToggle(container->get_transform(), getModConfig().AlwaysRainbow)->get_gameObject(), "overrides Fadeout, Fade red to green and Rainbow");
 
         // Fadeout
         AddConfigValueToggle(container->get_transform(), getModConfig().Fadeout);
@@ -56,7 +62,7 @@ void DidActivate(ViewController* self, bool firstActivation, bool addedToHierarc
         //QuestUI::BeatSaberUI::CreateText(container->get_transform(), "\n                                          Values over 1.0 will be 1.0");
         
         // FullFade
-        QuestUI::BeatSaberUI::AddHoverHint(AddConfigValueToggle(container->get_transform(), getModConfig().FullFade)->get_gameObject(), "Fades between the 15% and 95% Color");
+        BSML::Lite::AddHoverHint(AddConfigValueToggle(container->get_transform(), getModConfig().FullFade)->get_gameObject(), "Fades between the 15% and 95% Color");
 
 
         AddConfigValueColorPicker(container->get_transform(), getModConfig().Diehp);

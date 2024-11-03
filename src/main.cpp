@@ -1,8 +1,12 @@
 #include "main.hpp"
 #include "ModConfig.hpp"
+
 #include "GlobalNamespace/GameEnergyUIPanel.hpp"
 #include "GlobalNamespace/GameEnergyCounter.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
+#include "GlobalNamespace/IGameEnergyCounter.hpp"
+#include "GlobalNamespace/FileDifficultyBeatmap.hpp"
+#include "GlobalNamespace/FileDifficultyBeatmap.hpp"
+#include "GlobalNamespace/BeatmapLevel.hpp"
 #include "GlobalNamespace/OverrideEnvironmentSettings.hpp"
 #include "GlobalNamespace/ColorScheme.hpp"
 #include "GlobalNamespace/GameplayModifiers.hpp"
@@ -10,9 +14,12 @@
 #include "GlobalNamespace/PracticeSettings.hpp"
 #include "GlobalNamespace/StandardLevelScenesTransitionSetupDataSO.hpp"
 #include "GlobalNamespace/MultiplayerLevelScenesTransitionSetupDataSO.hpp"
-#include "GlobalNamespace/IPreviewBeatmapLevel.hpp"
+#include "GlobalNamespace/BeatmapKey.hpp"
+#include "GlobalNamespace/SongPreviewPlayer.hpp"
 #include "GlobalNamespace/BeatmapDifficulty.hpp"
 #include "GlobalNamespace/BeatmapCharacteristicSO.hpp"
+
+#include "RedBarViewController.hpp"
 
 #include "beatsaber-hook/shared/utils/typedefs.h"
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
@@ -25,26 +32,20 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 
-#include "RedBarViewController.hpp"
-
-#include "questui/shared/QuestUI.hpp"
 #include "custom-types/shared/register.hpp"
+
+#include "bsml/shared/BSML.hpp"
+
+#include "scotland2/shared/modloader.h"
 
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-using namespace QuestUI;
+using namespace BSML;
 
-static ModInfo modInfo;
-
-Logger& getLogger() {
-    static Logger* logger = new Logger(modInfo, LoggerOptions(false, true));
-    return *logger;
-}
-
-    UnityEngine::Material* energyBarMaterialStore = nullptr;
-    UnityEngine::UI::Image* energyBarStore = nullptr;
-    float energyy = 0.0;
-    int pos = 0;
+UnityEngine::Material* energyBarMaterialStore = nullptr;
+UnityEngine::UI::Image* energyBarStore = nullptr;
+float energyy = 0.0;
+int pos = 0;
 
 void SetColor(GameEnergyUIPanel* self, float energy) {
     UnityEngine::Color color;
@@ -52,12 +53,10 @@ void SetColor(GameEnergyUIPanel* self, float energy) {
     color = getModConfig().Defhp.GetValue();
     color.a = getModConfig().Alpha.GetValue();
     
-    UnityEngine::UI::Image* energyBar = self->energyBar;
-    
 
     
+    UnityEngine::UI::Image* energyBar = self->_energyBar;
     UnityEngine::Material* energyBarMaterial = energyBar->get_material();
-
     if (energyBarMaterialStore != energyBarMaterial || energyBarStore != energyBar) {
         energyBarMaterialStore = energyBarMaterial;
         energyBarStore = energyBar;
@@ -65,6 +64,7 @@ void SetColor(GameEnergyUIPanel* self, float energy) {
     if (energy != energyy) {
         energyy = energy;
     }
+
 
     if(getModConfig().FullFade.GetValue()) {
         double fraction = energy;
@@ -114,10 +114,8 @@ void SetColor(GameEnergyUIPanel* self, float energy) {
     } else {
         color.a = getModConfig().Alpha.GetValue();
     }
-    //getLogger().info("r: " + std::to_string(color.r) + " g: " + std::to_string(color.g) + " b: " + std::to_string(color.g) + " a: " + std::to_string(color.a));
     energyBar->set_color(color);
 }
-
 
 MAKE_HOOK_MATCH(GameEnergyUIPanel_Start, &GameEnergyUIPanel::Start, void, GameEnergyUIPanel* self) {
     //getLogger().info("LateUpdate RedBar");
@@ -130,8 +128,6 @@ MAKE_HOOK_MATCH(GameEnergyUIPanel_HandleGameEnergyDidChange, &GameEnergyUIPanel:
     //getLogger().info(std::to_string(energy));
     SetColor(self, energy);
 }
-
-
 
 float * Wheel(int WheelPos) {
   static int c[3];
@@ -160,7 +156,6 @@ float * Wheel(int WheelPos) {
   return epic;
 }
 
-
 MAKE_HOOK_MATCH(GameEnergyCounter_LateUpdate, &GameEnergyCounter::LateUpdate, void, GameEnergyCounter* self) {
     //getLogger().info("LateUpdate RedBar");
     GameEnergyCounter_LateUpdate(self);
@@ -185,28 +180,32 @@ MAKE_HOOK_MATCH(SceneManager_ActiveSceneChanged, &UnityEngine::SceneManagement::
     energyBarMaterialStore = nullptr;
 }
 
-extern "C" void setup(ModInfo& info) {
-    info.id = ID;
+#pragma region Mod setup
+/// @brief Called at the early stages of game loading
+/// @param info
+/// @return
+MOD_EXPORT_FUNC void setup(CModInfo& info) {
+    info.id = MOD_ID;
     info.version = VERSION;
-    modInfo = info;
-	
-    getLogger().info("Completed setup!");
+
+    Logger.info("Completed setup!");
 }
 
-extern "C" void load() {
-    getLogger().info("Installing hooks...");
+/// @brief Called later on in the game loading - a good time to install function hooks
+/// @return
+MOD_EXPORT_FUNC void late_load() {
     il2cpp_functions::Init();
+
     getModConfig().Init(modInfo);
-    QuestUI::Init();
+    BSML::Init();
 
+    BSML::Register::RegisterMainMenu("RedBar", "<color=#ff0000>RedBar", "Manage settings", DidActivate);
 
-    LoggerContextObject logger = getLogger().WithContext("load");
-    QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
-    QuestUI::Register::RegisterMainMenuModSettingsViewController(modInfo, DidActivate);
-    // Install our hooks
-    INSTALL_HOOK(logger, GameEnergyUIPanel_HandleGameEnergyDidChange);
-    INSTALL_HOOK(logger, GameEnergyCounter_LateUpdate);
-    INSTALL_HOOK(logger, GameEnergyUIPanel_Start);
-    INSTALL_HOOK(logger, SceneManager_ActiveSceneChanged);
-    getLogger().info("Installed all hooks!");
+    Logger.info("Installing hooks...");
+    INSTALL_HOOK(Logger, GameEnergyUIPanel_HandleGameEnergyDidChange);
+    INSTALL_HOOK(Logger, GameEnergyCounter_LateUpdate);
+    INSTALL_HOOK(Logger, GameEnergyUIPanel_Start);
+    INSTALL_HOOK(Logger, SceneManager_ActiveSceneChanged);
+    Logger.info("Installed all hooks!");
 }
+#pragma endregion

@@ -1,8 +1,10 @@
-#include "main.hpp"
+#pragma once
+
+//#include "main.hpp"
 
 #include "custom-types/shared/macros.hpp"
 
-#include "questui/shared/CustomTypes/Components/Settings/IncrementSetting.hpp"
+#include "bsml/shared/BSML.hpp"
 
 #include "UnityEngine/UI/Button.hpp"
 #include "HMUI/ViewController.hpp"
