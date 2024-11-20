@@ -19,6 +19,7 @@
 #include "GlobalNamespace/BeatmapDifficulty.hpp"
 #include "GlobalNamespace/BeatmapCharacteristicSO.hpp"
 
+#include "UI/SettingsView.hpp"
 #include "RedBarViewController.hpp"
 
 #include "beatsaber-hook/shared/utils/typedefs.h"

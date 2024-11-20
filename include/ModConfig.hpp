@@ -6,8 +6,8 @@
 // Mhm..
 
 DECLARE_CONFIG(ModConfig,
-    CONFIG_VALUE(Rainbow, bool, "Rainbow Bar when full energy", true);
-    CONFIG_VALUE(AlwaysRainbow, bool, "Always Rainbow Bar", false);
+    CONFIG_VALUE(Rainbow, bool, "Make the bar Rainbow when you have full energy", true);
+    CONFIG_VALUE(AlwaysRainbow, bool, "Alwayshave an Rainbow bar", false);
     CONFIG_VALUE(Fadeout, bool, "Fadeout", false);
     CONFIG_VALUE(FullFade, bool, "Use fade between 15% and 95% colors", false);
     CONFIG_VALUE(Alpha, float, "Alpha", 1.0);
