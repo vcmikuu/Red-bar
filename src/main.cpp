@@ -19,7 +19,6 @@
 #include "GlobalNamespace/BeatmapDifficulty.hpp"
 #include "GlobalNamespace/BeatmapCharacteristicSO.hpp"
 
-#include "UI/SettingsView.hpp"
 #include "RedBarViewController.hpp"
 
 #include "beatsaber-hook/shared/utils/typedefs.h"
@@ -119,14 +118,14 @@ void SetColor(GameEnergyUIPanel* self, float energy) {
 }
 
 MAKE_HOOK_MATCH(GameEnergyUIPanel_Start, &GameEnergyUIPanel::Start, void, GameEnergyUIPanel* self) {
-    //getLogger().info("LateUpdate RedBar");
+    Logger.info("LateUpdate RedBar");
     GameEnergyUIPanel_Start(self);
     SetColor(self, 0.5f);
 }
 
 MAKE_HOOK_MATCH(GameEnergyUIPanel_HandleGameEnergyDidChange, &GameEnergyUIPanel::RefreshEnergyUI, void, GameEnergyUIPanel* self, float energy) {
     GameEnergyUIPanel_HandleGameEnergyDidChange(self, energy);
-    //getLogger().info(std::to_string(energy));
+    Logger.info("Energy changed to {}", energy);
     SetColor(self, energy);
 }
 
@@ -158,7 +157,7 @@ float * Wheel(int WheelPos) {
 }
 
 MAKE_HOOK_MATCH(GameEnergyCounter_LateUpdate, &GameEnergyCounter::LateUpdate, void, GameEnergyCounter* self) {
-    //getLogger().info("LateUpdate RedBar");
+    Logger.info("LateUpdate RedBar");
     GameEnergyCounter_LateUpdate(self);
     if ((energyBarMaterialStore != nullptr && energyBarStore != nullptr && energyy == 1.0 && getModConfig().Rainbow.GetValue()) || (energyBarMaterialStore != nullptr && energyBarStore != nullptr && getModConfig().AlwaysRainbow.GetValue())) {
         float* Heck = Wheel(pos);

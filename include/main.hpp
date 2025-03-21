@@ -18,7 +18,7 @@
 #include "custom-types/shared/macros.hpp"
 
 #include "scotland2/shared/loader.hpp"
-#include "paper/shared/logger.hpp"
+#include "paper2_scotland2/shared/logger.hpp"
 
 #include "_config.hpp"
 #include "ModConfig.hpp"
