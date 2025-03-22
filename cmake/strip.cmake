@@ -1,9 +1,11 @@
 # Run at end to link with project
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
+# IDK why stripping doesn't work with this if
+# if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
     cmake_language(DEFER DIRECTORY ${CMAKE_SOURCE_DIR} CALL _setup_linux_strip_project())
-endif()
+# endif()
 
 function(_setup_linux_strip_project)
+    message("Stripping symbols")
     # Strip debug symbols
     add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMAND ${CMAKE_STRIP} -d --strip-all
