@@ -20,16 +20,17 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/utils.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/qpm.cmake)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "RELEASE" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo" OR ${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
-        # Better optimizations
-        add_compile_options(-O3)
+    message(STATUS "Building in release mode")
+    # Better optimizations
+    add_compile_options(-O3)
 
-        # LTO
-        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-        add_compile_options(-flto)
-endif()
-
-if(${CMAKE_BUILD_TYPE} STREQUAL "DEBUG" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
-        add_compile_options(-g)
+    # LTO
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    add_compile_options(-flto)
+else()
+    message(STATUS "Building in debug mode")
+    # Debug options
+    add_compile_options(-O0 -g)
 endif()
 
 # Targets
@@ -42,7 +43,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/strip.cmake)
 
 # stop symbols leaking
 # TODO: Fix
-# add_link_options(-Wl, --exclude-libs, ALL)
+add_link_options(-Wl,--exclude-libs,ALL)
 project( redbar
         VERSION ${PACKAGE_VERSION})
 
