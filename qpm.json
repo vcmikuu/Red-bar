@@ -5,7 +5,7 @@
   "info": {
     "name": "RedBar",
     "id": "redbar",
-    "version": "1.16.0",
+    "version": "1.17.0",
     "url": null,
     "additionalData": {
       "overrideSoName": "libredbar.so",
