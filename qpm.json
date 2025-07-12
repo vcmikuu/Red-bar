@@ -1,11 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/QuestPackageManager/QPM.Package/refs/heads/main/qpm.schema.json",
   "version": "0.1.1",
   "sharedDir": "shared",
   "dependenciesDir": "extern",
   "info": {
     "name": "RedBar",
     "id": "redbar",
-    "version": "1.17.0",
+    "version": "1.18.0",
     "url": null,
     "additionalData": {
       "overrideSoName": "libredbar.so",
@@ -68,7 +69,7 @@
     },
     {
       "id": "bsml",
-      "versionRange": "^0.4.53",
+      "versionRange": "^0.4.54",
       "additionalData": {}
     },
     {
